@@ -347,6 +347,79 @@
                 margin-top: 0 !important;
             }
         }
+        
+        .footer {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .footer h3 {
+            color: #7A00E6;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .footer-section {
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+        
+        .footer-link {
+            color: #7A00E6;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(122, 0, 230, 0.1);
+        }
+        
+        .footer-link:hover {
+            background: rgba(122, 0, 230, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .footer-disclaimer {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+        
+        .footer-creator {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.95rem;
+        }
+        
+        .footer-creator a {
+            color: #7A00E6;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .footer-creator a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -899,167 +972,6 @@
             document.getElementById('results').style.display = 'block';
             document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
-            const badge = document.getElementById('riskBadge');
-            const description = document.getElementById('riskDescription');
-            const controlsSection = document.getElementById('controlsSection');
-            
-            badge.textContent = riskLevel + ' RISK';
-            badge.className = 'risk-badge ' + (riskLevel === 'HIGH' ? 'high' : 'standard');
-            
-            if (riskLevel === 'HIGH') {
-                description.innerHTML = `
-                    <p><strong>This AI solution is classified as HIGH RISK</strong> per the RAISE 1.0 framework.</p>
-                    <p style="margin-top: 15px;"><strong>Classification Reasons:</strong></p>
-                    <ul style="text-align: left; max-width: 600px; margin: 10px auto; line-height: 1.8;">
-                        ${reasons.map(reason => `<li>${reason}</li>`).join('')}
-                    </ul>
-                    <p style="margin-top: 15px;">Full lifecycle governance oversight, extensive controls, and RRB (Responsible AI Review Board) approval required before deployment.</p>
-                `;
-            } else {
-                description.innerHTML = `
-                    <p><strong>This AI solution is classified as STANDARD RISK</strong> per the RAISE 1.0 framework.</p>
-                    <p style="margin-top: 15px;">Standard governance controls and monitoring apply. The solution does not fall into high-risk categories and follows standard deployment processes.</p>
-                `;
-            }
-            
-            // Display applicable controls
-            let controlsHTML = '<h3>📋 Applicable Process Controls (RAISE 1.0)</h3>';
-            
-            // Standard controls for all AI solutions
-            controlsHTML += `
-                <div class="control-category">
-                    <h4>Standard AI Requirements (All Solutions)</h4>
-                    <div class="control-item">
-                        <strong>AI Model Training</strong>
-                        <p>Select and train according to AI good practices with bias-free datasets</p>
-                    </div>
-                    <div class="control-item">
-                        <strong>AI Model Evaluation</strong>
-                        <p>Assess predictive quality and performance metrics</p>
-                    </div>
-                    <div class="control-item">
-                        <strong>AI Model Continuous Improvement</strong>
-                        <p>Monitor performance and implement retraining protocols</p>
-                    </div>
-                    <div class="control-item">
-                        <strong>AI Model Lifecycle Management</strong>
-                        <p>Implement robust training, testing, version control, and monitoring</p>
-                    </div>
-                </div>
-            `;
-            
-            // Individual interaction requirements
-            if (individualInteraction === 'direct' || individualInteraction === 'indirect') {
-                controlsHTML += `
-                    <div class="control-category">
-                        <h4>Individual Interaction Requirements</h4>
-                        <div class="control-item">
-                            <strong>Transparency Disclosure</strong>
-                            <p>Inform individuals they are interacting with an AI system. Example: "This chatbot is powered by AI. Please verify important information"</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>User Rights</strong>
-                            <p>Provide clear information about automated decision-making processes</p>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // Generative AI specific requirements
-            if (aiSystemType === 'generative' || aiSystemType === 'general_purpose') {
-                controlsHTML += `
-                    <div class="control-category">
-                        <h4>Generative AI Specific Requirements</h4>
-                        <div class="control-item">
-                            <strong>Output Labeling</strong>
-                            <p>Mark synthetic audio, image, video or text content as artificially generated or manipulated in a machine-readable format</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>Technical Solutions</strong>
-                            <p>Ensure technical solutions are effective, interoperable, robust and reliable as far as technically feasible</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>Deep Fakes Disclosure</strong>
-                            <p>If generating or manipulating image, audio or video content constituting a deep fake, disclose that the content has been artificially generated or manipulated</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>Text for Public Interest</strong>
-                            <p>If generating or manipulating text published with the purpose of informing the public on matters of public interest, disclose that the text has been artificially generated or manipulated</p>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            // High-risk specific controls
-            if (riskLevel === 'HIGH') {
-                controlsHTML += `
-                    <div class="control-category" style="border-left-color: #dc3545;">
-                        <h4 style="color: #dc3545;">HIGH RISK Additional Controls</h4>
-                        <div class="control-item">
-                            <strong>RRB Review & Approval</strong>
-                            <p>Submit to Responsible AI Review Board (RRB) for assessment and approval before deployment</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>Independent Assessments</strong>
-                            <p>Conduct independent pre-deployment and post-deployment assessments</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>Comprehensive Bias Testing</strong>
-                            <p>Complete comprehensive bias testing and fairness assessments across demographic groups</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>Enhanced Monitoring</strong>
-                            <p>Implement continuous monitoring with automated alerts and regular performance reviews</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>Audit Trail & Logging</strong>
-                            <p>Maintain comprehensive audit trails of all AI decisions and actions</p>
-                        </div>
-                        <div class="control-item">
-                            <strong>Human Oversight</strong>
-                            <p>Implement robust human oversight mechanisms with clear intervention protocols</p>
-                        </div>
-                    </div>
-                `;
-                
-                // Use case specific controls
-                if (primaryUseCase === 'medical' || primaryUseCase === 'clinical') {
-                    controlsHTML += `
-                        <div class="control-category">
-                            <h4>Medical/Clinical Specific Controls</h4>
-                            <div class="control-item">
-                                <strong>Clinical Validation</strong>
-                                <p>Conduct clinical validation studies to demonstrate safety and efficacy</p>
-                            </div>
-                            <div class="control-item">
-                                <strong>Regulatory Compliance</strong>
-                                <p>Ensure compliance with medical device regulations (FDA, CE marking) as applicable</p>
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                if (primaryUseCase === 'regulatory' || primaryUseCase === 'medicinal') {
-                    controlsHTML += `
-                        <div class="control-category">
-                            <h4>Regulatory Submission Specific Controls</h4>
-                            <div class="control-item">
-                                <strong>Quality Assurance</strong>
-                                <p>Implement rigorous quality assurance processes for all AI-generated regulatory content</p>
-                            </div>
-                            <div class="control-item">
-                                <strong>Human Expert Review</strong>
-                                <p>Require mandatory review by qualified regulatory experts before submission</p>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            controlsSection.innerHTML = controlsHTML;
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
         
         function downloadPDF() {
             if (!riskCalculated) {
@@ -1221,5 +1133,32 @@
             doc.save(fileName);
         }
     </script>
+    
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>📚 RAISE Framework Resources</h3>
+                <p>For detailed assessment guidelines, follow <strong>RAISE Framework</strong></p>
+            </div>
+            
+            <div class="footer-links">
+                <a href="https://sanofi.sharepoint.com/sites/RAISE-ResponsibleAISanofiforEveryone" target="_blank" class="footer-link">
+                    🔗 RAISE SharePoint
+                </a>
+                <a href="mailto:responsibleai@sanofi.com" class="footer-link">
+                    📧 responsibleai@sanofi.com
+                </a>
+            </div>
+            
+            <div class="footer-disclaimer">
+                ⚠️ <strong>Important:</strong> This tool provides preliminary assessment. For comprehensive evaluation, refer to RAISE guidelines and consult with the Responsible AI Team.
+            </div>
+            
+            <div class="footer-creator">
+                <p><strong>Created by:</strong> Himanshu Joshi | <a href="https://github.com/HimJoe" target="_blank">GitHub: HimJoe</a></p>
+                <p style="margin-top: 10px;">© 2025 All rights reserved</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
