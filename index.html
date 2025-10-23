@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAISE 1.0 AI Risk Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #7A00E6 0%, #000000 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #7A00E6, #000000);
+            color: white;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .header-content {
+            text-align: center;
+        }
+        
+        .brand-logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            z-index: 10;
+        }
+        
+        .sanofi-logo, .raise-logo {
+            height: 50px;
+            background: white;
+            border-radius: 8px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            min-width: 120px;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #7A00E6;
+            text-align: center;
+        }
+        
+        .logo-subtitle {
+            font-size: 10px;
+            color: #000;
+            font-weight: 400;
+            text-align: center;
+            margin-top: 2px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .version-badge {
+            background: linear-gradient(135deg, #fd7e14, #f76707);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #7A00E6;
+        }
+        
+        .form-section.governance {
+            border-left-color: #fd7e14;
+        }
+        
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+            font-size: 0.95rem;
+        }
+        
+        .help-text {
+            display: block;
+            font-size: 0.85rem;
+            color: #6c757d;
+            font-weight: 400;
+            font-style: italic;
+            margin-top: 3px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #7A00E6;
+            box-shadow: 0 0 0 3px rgba(122, 0, 230, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .info-box {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .info-box h4 {
+            color: #17a2b8;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        .info-box p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #7A00E6, #000000);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(122, 0, 230, 0.3);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-download {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        
+        .results {
+            display: none;
+            margin-top: 40px;
+        }
+        
+        .score-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .risk-badge {
+            display: inline-block;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 20px 0;
+        }
+        
+        .risk-badge.high {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+        
+        .risk-badge.standard {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .risk-description {
+            font-size: 1.2rem;
+            color: #495057;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+        
+        .controls-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .controls-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+        
+        .control-category {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #7A00E6;
+        }
+        
+        .control-category h4 {
+            color: #7A00E6;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .control-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #17a2b8;
+        }
+        
+        .control-item strong {
+            color: #17a2b8;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .control-item p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #495057;
+        }
+        
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .brand-logos {
+                position: relative;
+                top: 0;
+                justify-content: center;
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+            
+            .header-content {
+                margin-top: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="brand-logos">
+                <div class="sanofi-logo">
+                    <div>
+                        <div class="logo-text">SANOFI</div>
+                        <div class="logo-subtitle">Global Healthcare</div>
+                    </div>
+                </div>
+                <div class="raise-logo">
+                    <div>
+                        <div class="logo-text">RAISE</div>
+                        <div class="logo-subtitle">Responsible AI Solutions & Ethics</div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-content" style="margin-top: 60px;">
+                <h1>RAISE 1.0 AI Risk Calculator</h1>
+                <p>Binary Risk Classification: HIGH or STANDARD</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">Aligned with Risk Profile 1.0 Framework</p>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="version-badge">⚠️ RAISE 1.0 Framework</div>
+            
+            <div class="info-box">
+                <h4>📋 About RAISE 1.0 Risk Classification</h4>
+                <p><strong>Risk Output:</strong> This calculator uses a binary classification system (HIGH or STD) aligned with the RAISE 1.0 Risk Profile.</p>
+                <p><strong>Logic:</strong> IF AI system falls into any HIGH-risk category (Medical Purposes, Medicinal Product Information Review, Manufacturing & Supply Chain, Employment/HR, Sales & Customer Relations, Real-World Evidence, Pharmacovigilance, Clinical Trial Support, Legal Support, Financial Reporting, People Safety, Regulatory Submission) OR is [Used Externally] OR is [Autonomous] THEN → <strong>HIGH RISK</strong></p>
+                <p><strong>Otherwise:</strong> → <strong>STANDARD RISK</strong></p>
+            </div>
+            
+            <form id="assessmentForm">
+                <div class="form-grid">
+                    <div class="form-section">
+                        <h3>🎯 AI Solution & Risk Classification</h3>
+                        
+                        <div class="form-group">
+                            <label for="projectName">Project/System Name:</label>
+                            <span class="help-text">The official name or identifier for your AI solution</span>
+                            <input type="text" id="projectName" placeholder="Enter AI system name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="useCase">Use Case Description:</label>
+                            <span class="help-text">Describe the primary business objective or problem being solved</span>
+                            <textarea id="useCase" placeholder="Describe the AI application, its purpose, intended users, data processed, and how outputs will be used" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="primaryUseCase">Primary Use Case Category (Q5.2):</label>
+                            <span class="help-text">Select the category that best describes your AI solution's primary focus</span>
+                            <select id="primaryUseCase" required>
+                                <option value="">Select primary use case...</option>
+                                <option value="medical">Medical Purposes - AI impacts patient safety by aiding diagnosis, prognosis, medication decisions (MRI analysis, drug dosing)</option>
+                                <option value="medicinal">Medicinal Product Information Review - AI assists in drafting, translating, reviewing medicinal product docs (regulatory submissions)</option>
+                                <option value="manufacturing">Manufacturing and Supply Chain - AI in manufacturing/supply chain impacting patient safety or product availability (quality monitoring, disruption alerts)</option>
+                                <option value="hr">Employment or Human Resources - AI could result in preferential treatment or discrimination (resume scanning, promotions, performance management)</option>
+                                <option value="sales">Sales and Customer Relations - AI optimizes sales operations and enhances customer service, affecting accessibility to products</option>
+                                <option value="rwe">Real-World Evidence Generation - AI gathers and analyzes real-world evidence (RWE) for regulatory submissions (healthcare data for drug efficacy)</option>
+                                <option value="pv">Pharmacovigilance - AI classifies and scores adverse events related to drug safety, ensuring timely signal detection</option>
+                                <option value="clinical">Clinical Trial Support - AI analyzes clinical trial data or helps design trials, improving patient outcomes or trial efficiency</option>
+                                <option value="legal">Legal Support - AI involved in sensitive legal activities that could result in legal liability, regulatory non-compliance, or unauthorized disclosure of trade secrets</option>
+                                <option value="financial">Financial Reporting - AI affects accuracy or completeness of financial reporting, including key financial statements (Balance Sheet, P&L, Income/Cash Flow)</option>
+                                <option value="safety">People Safety - AI affects equipment or processes that, if failed, could lead to severe injuries, fatalities, catastrophic outcomes, or undetected hazardous conditions</option>
+                                <option value="regulatory">Regulatory Submission - AI impacts accuracy and/or completeness of Sanofi's regulatory submission (compliance documentation submitted to regulatory authority)</option>
+                                <option value="other">Other - Business support, operational efficiency, internal tools (NOT high-risk categories)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="externalUse">Is the AI system used externally? (Accessible over the internet or used outside Sanofi):</label>
+                            <span class="help-text">Does your AI solution interact with or is accessible by external users, customers, or the public?</span>
+                            <select id="externalUse" required>
+                                <option value="">Select external use status...</option>
+                                <option value="yes">Yes - Externally accessible (Digital Properties: websites, chatbots, mobile apps for HCP, Consumer, Patient)</option>
+                                <option value="no">No - Internal only (not accessible over internet, only for Sanofi employees)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="autonomyLevel">Level of Autonomy / Decision Making (Q5.3):</label>
+                            <span class="help-text">How much human oversight exists in the AI's decisions and actions?</span>
+                            <select id="autonomyLevel" required>
+                                <option value="">Select autonomy level...</option>
+                                <option value="fully_autonomous">Fully Autonomous - AI makes decisions and takes actions without human review or approval (auto-trading, auto-approvals, automated decisions affecting individuals)</option>
+                                <option value="semi_autonomous">Semi-Autonomous - AI makes recommendations that humans usually approve, but limited human review (periodic audits, exception-based review)</option>
+                                <option value="advisory">Advisory/Supportive - AI provides recommendations, humans make final decisions with full control (decision support systems, human always in the loop)</option>
+                                <option value="informational">Informational Only - AI provides insights, reports, analytics without decision-making (reporting, data visualization)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="individualInteraction">Does the AI System interact with individuals? (Q5.4):</label>
+                            <span class="help-text">How directly does the AI engage with people or make decisions affecting them?</span>
+                            <select id="individualInteraction" required>
+                                <option value="">Select interaction level...</option>
+                                <option value="direct">Yes - Direct interaction (chatbots, virtual assistants, customer-facing apps, voice interfaces)</option>
+                                <option value="indirect">Yes - Indirect interaction (automated decisions affecting individuals, recommendations to staff, back-office automation)</option>
+                                <option value="none">No - No individual interaction (internal reporting, data processing, analytics only)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="aiSystemType">AI System Type:</label>
+                            <span class="help-text">The primary capability or category of your AI solution</span>
+                            <select id="aiSystemType" required>
+                                <option value="">Select AI system type...</option>
+                                <option value="traditional">Traditional AI/ML (predictive models, classification, recommendation systems, computer vision)</option>
+                                <option value="generative">Generative AI (creating text, images, code, video - ChatGPT, DALL-E, Copilot, Claude)</option>
+                                <option value="agentic">Agentic AI (autonomous decision-making, workflow automation, intelligent agents, task delegation)</option>
+                                <option value="general_purpose">General Purpose AI Model (foundation models, multi-modal AI, adaptable across use cases)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section governance">
+                        <h3>🛡️ Governance & Security</h3>
+                        
+                        <div class="form-group">
+                            <label for="stakeholder">Primary Stakeholder:</label>
+                            <span class="help-text">The business unit or department responsible for this AI solution</span>
+                            <select id="stakeholder" required>
+                                <option value="">Select stakeholder</option>
+                                <option value="R&D">R&D - Research & Development</option>
+                                <option value="M&S">M&S - Manufacturing & Supply</option>
+                                <option value="Commercial">Commercial</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Medical Affairs">Medical Affairs</option>
+                                <option value="Regulatory Affairs">Regulatory Affairs</option>
+                                <option value="P&C">P&C - People & Culture</option>
+                                <option value="Legal">Legal</option>
+                                <option value="Compliance">Compliance</option>
+                                <option value="Corporate Affairs">Corporate Affairs</option>
+                                <option value="Business Development">Business Development</option>
+                                <option value="Digital">Digital</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dataSensitivity">Data Sensitivity Level:</label>
+                            <span class="help-text">The most sensitive type of data processed or accessed by the system</span>
+                            <select id="dataSensitivity" required>
+                                <option value="">Select data sensitivity level</option>
+                                <option value="highly_sensitive">Highly Sensitive - PHI/Health records (medical records, diagnoses, SSN, health insurance ID, treatment history, genetic/biometric data)</option>
+                                <option value="sensitive">Sensitive - PII (full name, email, physical address, phone number, date of birth, government ID, HR data)</option>
+                                <option value="confidential">Confidential - Financial/business-sensitive (account numbers, credit cards, trade secrets, contracts, pricing)</option>
+                                <option value="internal">Internal - Anonymized/de-identified data (aggregated demographics, pseudonymized records, operational data)</option>
+                                <option value="public">Public - Open-source or public data (publicly available datasets, published research)</option>
+                            </select>
+                            <div class="info-box" style="margin-top: 10px; background: #fff3cd; border-left-color: #ffc107;">
+                                <p style="font-size: 0.85rem; margin: 0;"><strong>PHI:</strong> Protected Health Information<br><strong>PII:</strong> Personally Identifiable Information</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dataPrivacy">Data Privacy Risk Level:</label>
+                            <span class="help-text">The privacy sensitivity and identifiability of data being processed</span>
+                            <select id="dataPrivacy" required>
+                                <option value="">Select privacy risk</option>
+                                <option value="critical">Critical - Sensitive health data/PHI (medical records, diagnosis, treatment data, genetic info)</option>
+                                <option value="very_high">Very High - Identifiable personal data (full name, contact info, detailed profiles)</option>
+                                <option value="high">High - Pseudonymized personal data (masked PII, coded identifiers, reversible anonymization)</option>
+                                <option value="medium">Medium - De-identified data with controls (pseudonymized data, tokenized IDs, encryption at rest)</option>
+                                <option value="low">Low - Anonymous/aggregated data only (statistical reports, public datasets, no individual records)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="securityLevel">Security Implementation:</label>
+                            <span class="help-text">The robustness of security measures protecting your AI system</span>
+                            <select id="securityLevel" required>
+                                <option value="">Select security level</option>
+                                <option value="comprehensive">Comprehensive security framework (zero trust, MFA, encryption, SOC monitoring, penetration testing)</option>
+                                <option value="standard">Standard enterprise security controls (firewalls, access controls, regular updates, SIEM logging)</option>
+                                <option value="basic">Basic security measures (passwords, basic encryption, antivirus, network segmentation)</option>
+                                <option value="limited">Limited security controls (authentication only, minimal encryption, ad-hoc patches)</option>
+                                <option value="minimal">Minimal/inadequate security measures (weak passwords, no encryption, outdated systems)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="gxpRelevant">GxP Relevance (Q3.2):</label>
+                            <span class="help-text">Does this AI support Good Practice (GxP) regulated processes?</span>
+                            <select id="gxpRelevant" required>
+                                <option value="">Select GxP relevance</option>
+                                <option value="yes_high">Yes - GxP High (Direct impact on patient safety or product quality)</option>
+                                <option value="yes_standard">Yes - GxP Standard (Supports GxP processes but no direct impact on patient safety)</option>
+                                <option value="no">No - Non-GxP (Does not support GxP processes)</option>
+                            </select>
+                            <div class="info-box" style="margin-top: 10px; background: #d1ecf1; border-left-color: #17a2b8;">
+                                <p style="font-size: 0.85rem; margin: 0;"><strong>GxP:</strong> Good Practice regulations (GMP, GCP, GLP, etc.) covering research, clinical, manufacturing, and quality processes</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="soxRelevant">SOX Relevance (Q4.1/Q4.2):</label>
+                            <span class="help-text">Does this AI support SOX-controlled financial processes?</span>
+                            <select id="soxRelevant" required>
+                                <option value="">Select SOX relevance</option>
+                                <option value="yes">Yes - SOX relevant (embeds key business automated controls, supports key reports, or is interfaced with SOX relevant applications)</option>
+                                <option value="no">No - Not SOX relevant</option>
+                            </select>
+                            <div class="info-box" style="margin-top: 10px; background: #d1ecf1; border-left-color: #17a2b8;">
+                                <p style="font-size: 0.85rem; margin: 0;"><strong>SOX:</strong> Sarbanes-Oxley Act - financial reporting and internal controls compliance</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="regulatory">Regulatory Compliance Level:</label>
+                            <span class="help-text">How well does your AI meet legal and regulatory requirements?</span>
+                            <select id="regulatory" required>
+                                <option value="">Select compliance level</option>
+                                <option value="full">Full regulatory approval obtained (FDA clearance, CE marking, legal review, audit certifications)</option>
+                                <option value="framework">Compliance framework implemented (GDPR alignment, AI Act readiness, documented procedures)</option>
+                                <option value="basic">Basic compliance measures (terms of service, privacy policy, basic data protection)</option>
+                                <option value="limited">Limited compliance consideration (awareness of regulations but minimal implementation)</option>
+                                <option value="none">No regulatory compliance assessment (no legal review, unvetted deployment)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="calculate-btn" onclick="calculateRisk()">Calculate Risk Classification</button>
+                
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-download" onclick="downloadPDF()">
+                        📥 Download PDF Report
+                    </button>
+                </div>
+            </form>
+            
+            <div class="results" id="results">
+                <div class="score-card">
+                    <h2 style="color: #2c3e50; margin-bottom: 20px;">AI Risk Classification Result</h2>
+                    <div class="risk-badge" id="riskBadge">-</div>
+                    <div class="risk-description" id="riskDescription"></div>
+                </div>
+                
+                <div class="controls-section" id="controlsSection"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let riskCalculated = false;
+        let currentRisk = '';
+        
+        function calculateRisk() {
+            const form = document.getElementById('assessmentForm');
+            if (!form.checkValidity()) {
+                alert('Please fill in all required fields before calculating the risk classification.');
+                form.reportValidity();
+                return;
+            }
+            
+            const primaryUseCase = document.getElementById('primaryUseCase').value;
+            const externalUse = document.getElementById('externalUse').value;
+            const autonomyLevel = document.getElementById('autonomyLevel').value;
+            const aiSystemType = document.getElementById('aiSystemType').value;
+            const individualInteraction = document.getElementById('individualInteraction').value;
+            const gxpRelevant = document.getElementById('gxpRelevant').value;
+            const soxRelevant = document.getElementById('soxRelevant').value;
+            const dataSensitivity = document.getElementById('dataSensitivity').value;
+            const dataPrivacy = document.getElementById('dataPrivacy').value;
+            const securityLevel = document.getElementById('securityLevel').value;
+            const regulatory = document.getElementById('regulatory').value;
+            
+            // RAISE 1.0 Logic: HIGH if in high-risk use case OR external OR autonomous
+            const highRiskUseCases = ['medical', 'medicinal', 'manufacturing', 'hr', 'sales', 'rwe', 'pv', 'clinical', 'legal', 'financial', 'safety', 'regulatory'];
+            
+            let isHighRisk = false;
+            let riskReasons = [];
+            
+            // Check if primary use case is high-risk
+            if (highRiskUseCases.includes(primaryUseCase)) {
+                isHighRisk = true;
+                riskReasons.push('Primary use case falls into HIGH-RISK category per RAISE 1.0 Risk Profile (Q5.2)');
+            }
+            
+            // Check if used externally
+            if (externalUse === 'yes') {
+                isHighRisk = true;
+                riskReasons.push('AI system is used externally / accessible over the internet (Digital Property)');
+            }
+            
+            // Check if fully autonomous
+            if (autonomyLevel === 'fully_autonomous') {
+                isHighRisk = true;
+                riskReasons.push('AI system operates with full autonomy (no human review before decisions)');
+            }
+            
+            // Check GxP High relevance
+            if (gxpRelevant === 'yes_high') {
+                isHighRisk = true;
+                riskReasons.push('AI has direct impact on patient safety or product quality (GxP High per Q3.3)');
+            }
+            
+            // Check SOX relevance
+            if (soxRelevant === 'yes') {
+                riskReasons.push('SOX-relevant system requiring financial controls compliance (Q4.2)');
+            }
+            
+            // Check for critical data sensitivity
+            if (dataSensitivity === 'highly_sensitive' || dataPrivacy === 'critical') {
+                riskReasons.push('Processing highly sensitive data (PHI/health records) requiring enhanced data protection');
+            }
+            
+            // Check for inadequate security
+            if (securityLevel === 'minimal' || securityLevel === 'limited') {
+                riskReasons.push('⚠️ Warning: Inadequate security measures may increase operational risk');
+            }
+            
+            currentRisk = isHighRisk ? 'HIGH' : 'STANDARD';
+            
+            displayResults(currentRisk, riskReasons, aiSystemType, individualInteraction, primaryUseCase, gxpRelevant, soxRelevant);
+            riskCalculated = true;
+        }
+        
+        function displayResults(riskLevel, reasons, aiSystemType, individualInteraction, primaryUseCase, gxpRelevant, soxRelevant) {
+            const badge = document.getElementById('riskBadge');
+            const description = document.getElementById('riskDescription');
+            const controlsSection = document.getElementById('controlsSection');
+            
+            badge.textContent = riskLevel + ' RISK';
+            badge.className = 'risk-badge ' + (riskLevel === 'HIGH' ? 'high' : 'standard');
+            
+            if (riskLevel === 'HIGH') {
+                description.innerHTML = `
+                    <p><strong>This AI solution is classified as HIGH RISK</strong> per the RAISE 1.0 framework.</p>
+                    <p style="margin-top: 15px;"><strong>Classification Reasons:</strong></p>
+                    <ul style="text-align: left; max-width: 600px; margin: 10px auto; line-height: 1.8;">
+                        ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                    <p style="margin-top: 15px;">Full lifecycle governance oversight, extensive controls, and RRB (Responsible AI Review Board) approval required before deployment.</p>
+                `;
+            } else {
+                description.innerHTML = `
+                    <p><strong>This AI solution is classified as STANDARD RISK</strong> per the RAISE 1.0 framework.</p>
+                    <p style="margin-top: 15px;">Standard governance controls and monitoring apply. The solution does not fall into high-risk categories and follows standard deployment processes.</p>
+                    ${reasons.length > 0 ? `<p style="margin-top: 15px;"><strong>Additional Considerations:</strong></p>
+                    <ul style="text-align: left; max-width: 600px; margin: 10px auto; line-height: 1.8;">
+                        ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>` : ''}
+                `;
+            }
+            
+            // Display applicable controls
+            let controlsHTML = '<h3>📋 Applicable Process Controls (RAISE 1.0)</h3>';
+            
+            // Standard controls for all AI solutions
+            controlsHTML += `
+                <div class="control-category">
+                    <h4>Standard AI Requirements (All Solutions)</h4>
+                    <div class="control-item">
+                        <strong>AI Model Training</strong>
+                        <p>Select and train according to AI good practices with bias-free datasets</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>AI Model Evaluation</strong>
+                        <p>Assess predictive quality and performance metrics</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>AI Model Continuous Improvement</strong>
+                        <p>Monitor performance and implement retraining protocols</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>AI Model Lifecycle Management</strong>
+                        <p>Implement robust training, testing, version control, and monitoring</p>
+                    </div>
+                </div>
+            `;
+            
+            // GxP Controls
+            if (gxpRelevant === 'yes_high' || gxpRelevant === 'yes_standard') {
+                controlsHTML += `
+                    <div class="control-category" style="border-left-color: #17a2b8;">
+                        <h4 style="color: #17a2b8;">GxP Compliance Controls</h4>
+                        <div class="control-item">
+                            <strong>Validation & Qualification</strong>
+                            <p>Complete validation lifecycle per DFC-QU-GOP-0001043 (System Life Cycle)</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Documentation Management</strong>
+                            <p>Maintain GxP-compliant documentation including validation plans, protocols, and reports</p>
+                        </div>
+                        ${gxpRelevant === 'yes_high' ? `
+                        <div class="control-item">
+                            <strong>GxP High - Enhanced Controls</strong>
+                            <p>Direct impact on patient safety/product quality requires additional risk mitigation controls</p>
+                        </div>` : ''}
+                        <div class="control-item">
+                            <strong>Periodic Review</strong>
+                            <p>Conduct periodic GxP compliance assessments to verify validated state (DFC-QU-GOP-0000117)</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Change Management</strong>
+                            <p>Follow GxP change control procedures for all modifications (DFC-QU-GOP-0000462)</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // SOX Controls
+            if (soxRelevant === 'yes') {
+                controlsHTML += `
+                    <div class="control-category" style="border-left-color: #ffc107;">
+                        <h4 style="color: #f57c00;">SOX Compliance Controls</h4>
+                        <div class="control-item">
+                            <strong>Business Controls Documentation</strong>
+                            <p>Document automated business controls embedded in the AI system</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Segregation of Duties (SOD)</strong>
+                            <p>Implement SOD controls to prevent conflicts of interest in financial processes</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Access Controls</strong>
+                            <p>Implement role-based access with manager and data owner approval for sensitive operations</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Annual SOX Assessment</strong>
+                            <p>Conduct annual compliance assessment and report findings per SOX requirements</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Audit Trail & Logging</strong>
+                            <p>Maintain comprehensive audit trails for all financial-impacting activities</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Individual interaction requirements
+            if (individualInteraction === 'direct' || individualInteraction === 'indirect') {
+                controlsHTML += `
+                    <div class="control-category">
+                        <h4>Individual Interaction Requirements</h4>
+                        <div class="control-item">
+                            <strong>Transparency Disclosure</strong>
+                            <p>Inform individuals they are interacting with an AI system. Example: "This chatbot is powered by AI. Please verify important information"</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>User Rights</strong>
+                            <p>Provide clear information about automated decision-making processes</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Generative AI specific requirements
+            if (aiSystemType === 'generative' || aiSystemType === 'general_purpose') {
+                controlsHTML += `
+                    <div class="control-category">
+                        <h4>Generative AI Specific Requirements</h4>
+                        <div class="control-item">
+                            <strong>Output Labeling</strong>
+                            <p>Mark synthetic audio, image, video or text content as artificially generated or manipulated in a machine-readable format</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Technical Solutions</strong>
+                            <p>Ensure technical solutions are effective, interoperable, robust and reliable as far as technically feasible</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Deep Fakes Disclosure</strong>
+                            <p>If generating or manipulating image, audio or video content constituting a deep fake, disclose that the content has been artificially generated or manipulated</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Text for Public Interest</strong>
+                            <p>If generating or manipulating text published with the purpose of informing the public on matters of public interest, disclose that the text has been artificially generated or manipulated</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Legal Review for General Purpose Models</strong>
+                            <p>If classified as General Purpose AI Model under EU AI Act, obtain legal review to determine additional obligations</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // High-risk specific controls
+            if (riskLevel === 'HIGH') {
+                controlsHTML += `
+                    <div class="control-category" style="border-left-color: #dc3545;">
+                        <h4 style="color: #dc3545;">HIGH RISK Additional Controls</h4>
+                        <div class="control-item">
+                            <strong>RRB Review & Approval</strong>
+                            <p>Submit to Responsible AI Review Board (RRB) for assessment and approval before deployment</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Independent Assessments</strong>
+                            <p>Conduct independent pre-deployment and post-deployment assessments</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Comprehensive Bias Testing</strong>
+                            <p>Complete comprehensive bias testing and fairness assessments across demographic groups</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Enhanced Monitoring</strong>
+                            <p>Implement continuous monitoring with automated alerts and regular performance reviews</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Audit Trail & Logging</strong>
+                            <p>Maintain comprehensive audit trails of all AI decisions and actions</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Human Oversight</strong>
+                            <p>Implement robust human oversight mechanisms with clear intervention protocols</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Use case specific controls
+                if (primaryUseCase === 'medical' || primaryUseCase === 'clinical') {
+                    controlsHTML += `
+                        <div class="control-category">
+                            <h4>Medical/Clinical Specific Controls</h4>
+                            <div class="control-item">
+                                <strong>Clinical Validation</strong>
+                                <p>Conduct clinical validation studies to demonstrate safety and efficacy</p>
+                            </div>
+                            <div class="control-item">
+                                <strong>Regulatory Compliance</strong>
+                                <p>Ensure compliance with medical device regulations (FDA, CE marking) as applicable</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (primaryUseCase === 'regulatory' || primaryUseCase === 'medicinal') {
+                    controlsHTML += `
+                        <div class="control-category">
+                            <h4>Regulatory Submission Specific Controls</h4>
+                            <div class="control-item">
+                                <strong>Quality Assurance</strong>
+                                <p>Implement rigorous quality assurance processes for all AI-generated regulatory content</p>
+                            </div>
+                            <div class="control-item">
+                                <strong>Human Expert Review</strong>
+                                <p>Require mandatory review by qualified regulatory experts before submission</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            controlsSection.innerHTML = controlsHTML;
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+            const badge = document.getElementById('riskBadge');
+            const description = document.getElementById('riskDescription');
+            const controlsSection = document.getElementById('controlsSection');
+            
+            badge.textContent = riskLevel + ' RISK';
+            badge.className = 'risk-badge ' + (riskLevel === 'HIGH' ? 'high' : 'standard');
+            
+            if (riskLevel === 'HIGH') {
+                description.innerHTML = `
+                    <p><strong>This AI solution is classified as HIGH RISK</strong> per the RAISE 1.0 framework.</p>
+                    <p style="margin-top: 15px;"><strong>Classification Reasons:</strong></p>
+                    <ul style="text-align: left; max-width: 600px; margin: 10px auto; line-height: 1.8;">
+                        ${reasons.map(reason => `<li>${reason}</li>`).join('')}
+                    </ul>
+                    <p style="margin-top: 15px;">Full lifecycle governance oversight, extensive controls, and RRB (Responsible AI Review Board) approval required before deployment.</p>
+                `;
+            } else {
+                description.innerHTML = `
+                    <p><strong>This AI solution is classified as STANDARD RISK</strong> per the RAISE 1.0 framework.</p>
+                    <p style="margin-top: 15px;">Standard governance controls and monitoring apply. The solution does not fall into high-risk categories and follows standard deployment processes.</p>
+                `;
+            }
+            
+            // Display applicable controls
+            let controlsHTML = '<h3>📋 Applicable Process Controls (RAISE 1.0)</h3>';
+            
+            // Standard controls for all AI solutions
+            controlsHTML += `
+                <div class="control-category">
+                    <h4>Standard AI Requirements (All Solutions)</h4>
+                    <div class="control-item">
+                        <strong>AI Model Training</strong>
+                        <p>Select and train according to AI good practices with bias-free datasets</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>AI Model Evaluation</strong>
+                        <p>Assess predictive quality and performance metrics</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>AI Model Continuous Improvement</strong>
+                        <p>Monitor performance and implement retraining protocols</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>AI Model Lifecycle Management</strong>
+                        <p>Implement robust training, testing, version control, and monitoring</p>
+                    </div>
+                </div>
+            `;
+            
+            // Individual interaction requirements
+            if (individualInteraction === 'direct' || individualInteraction === 'indirect') {
+                controlsHTML += `
+                    <div class="control-category">
+                        <h4>Individual Interaction Requirements</h4>
+                        <div class="control-item">
+                            <strong>Transparency Disclosure</strong>
+                            <p>Inform individuals they are interacting with an AI system. Example: "This chatbot is powered by AI. Please verify important information"</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>User Rights</strong>
+                            <p>Provide clear information about automated decision-making processes</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Generative AI specific requirements
+            if (aiSystemType === 'generative' || aiSystemType === 'general_purpose') {
+                controlsHTML += `
+                    <div class="control-category">
+                        <h4>Generative AI Specific Requirements</h4>
+                        <div class="control-item">
+                            <strong>Output Labeling</strong>
+                            <p>Mark synthetic audio, image, video or text content as artificially generated or manipulated in a machine-readable format</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Technical Solutions</strong>
+                            <p>Ensure technical solutions are effective, interoperable, robust and reliable as far as technically feasible</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Deep Fakes Disclosure</strong>
+                            <p>If generating or manipulating image, audio or video content constituting a deep fake, disclose that the content has been artificially generated or manipulated</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Text for Public Interest</strong>
+                            <p>If generating or manipulating text published with the purpose of informing the public on matters of public interest, disclose that the text has been artificially generated or manipulated</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // High-risk specific controls
+            if (riskLevel === 'HIGH') {
+                controlsHTML += `
+                    <div class="control-category" style="border-left-color: #dc3545;">
+                        <h4 style="color: #dc3545;">HIGH RISK Additional Controls</h4>
+                        <div class="control-item">
+                            <strong>RRB Review & Approval</strong>
+                            <p>Submit to Responsible AI Review Board (RRB) for assessment and approval before deployment</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Independent Assessments</strong>
+                            <p>Conduct independent pre-deployment and post-deployment assessments</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Comprehensive Bias Testing</strong>
+                            <p>Complete comprehensive bias testing and fairness assessments across demographic groups</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Enhanced Monitoring</strong>
+                            <p>Implement continuous monitoring with automated alerts and regular performance reviews</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Audit Trail & Logging</strong>
+                            <p>Maintain comprehensive audit trails of all AI decisions and actions</p>
+                        </div>
+                        <div class="control-item">
+                            <strong>Human Oversight</strong>
+                            <p>Implement robust human oversight mechanisms with clear intervention protocols</p>
+                        </div>
+                    </div>
+                `;
+                
+                // Use case specific controls
+                if (primaryUseCase === 'medical' || primaryUseCase === 'clinical') {
+                    controlsHTML += `
+                        <div class="control-category">
+                            <h4>Medical/Clinical Specific Controls</h4>
+                            <div class="control-item">
+                                <strong>Clinical Validation</strong>
+                                <p>Conduct clinical validation studies to demonstrate safety and efficacy</p>
+                            </div>
+                            <div class="control-item">
+                                <strong>Regulatory Compliance</strong>
+                                <p>Ensure compliance with medical device regulations (FDA, CE marking) as applicable</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (primaryUseCase === 'regulatory' || primaryUseCase === 'medicinal') {
+                    controlsHTML += `
+                        <div class="control-category">
+                            <h4>Regulatory Submission Specific Controls</h4>
+                            <div class="control-item">
+                                <strong>Quality Assurance</strong>
+                                <p>Implement rigorous quality assurance processes for all AI-generated regulatory content</p>
+                            </div>
+                            <div class="control-item">
+                                <strong>Human Expert Review</strong>
+                                <p>Require mandatory review by qualified regulatory experts before submission</p>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            controlsSection.innerHTML = controlsHTML;
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function downloadPDF() {
+            if (!riskCalculated) {
+                alert('Please calculate the risk classification before downloading the report.');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const projectName = document.getElementById('projectName').value || 'Not specified';
+            const useCase = document.getElementById('useCase').value || 'Not specified';
+            const primaryUseCase = document.getElementById('primaryUseCase');
+            const primaryUseCaseText = primaryUseCase.options[primaryUseCase.selectedIndex].text || 'Not specified';
+            const stakeholder = document.getElementById('stakeholder').value || 'Not specified';
+            const gxpRelevant = document.getElementById('gxpRelevant');
+            const gxpText = gxpRelevant.options[gxpRelevant.selectedIndex].text || 'Not specified';
+            const soxRelevant = document.getElementById('soxRelevant');
+            const soxText = soxRelevant.options[soxRelevant.selectedIndex].text || 'Not specified';
+            
+            doc.setFontSize(20);
+            doc.setTextColor(44, 62, 80);
+            doc.text('RAISE 1.0 AI Risk Assessment Report', 20, 25);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Binary Risk Classification (HIGH / STANDARD)', 20, 35);
+            doc.text(`Generated: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}`, 20, 42);
+            
+            const riskColor = currentRisk === 'HIGH' ? [220, 53, 69] : [40, 167, 69];
+            
+            doc.setFillColor(riskColor[0], riskColor[1], riskColor[2]);
+            doc.rect(150, 15, 40, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.text('RISK LEVEL', 170, 25, { align: 'center' });
+            doc.setFontSize(16);
+            doc.text(currentRisk, 170, 35, { align: 'center' });
+            
+            let yPos = 60;
+            doc.setFontSize(14);
+            doc.setTextColor(44, 62, 80);
+            doc.text('PROJECT INFORMATION', 20, yPos);
+            doc.setLineWidth(0.5);
+            doc.line(20, yPos + 2, 190, yPos + 2);
+            
+            yPos += 15;
+            doc.setFontSize(11);
+            doc.setTextColor(0, 0, 0);
+            
+            doc.text('Project Name:', 20, yPos);
+            const projectLines = doc.splitTextToSize(projectName, 120);
+            doc.text(projectLines, 70, yPos);
+            yPos += Math.max(projectLines.length * 5, 8);
+            
+            doc.text('Primary Stakeholder:', 20, yPos);
+            doc.text(stakeholder, 70, yPos);
+            yPos += 8;
+            
+            doc.text('Risk Classification:', 20, yPos);
+            doc.setTextColor(riskColor[0], riskColor[1], riskColor[2]);
+            doc.text(currentRisk + ' RISK', 70, yPos);
+            doc.setTextColor(0, 0, 0);
+            yPos += 8;
+            
+            doc.text('Primary Use Case:', 20, yPos);
+            yPos += 6;
+            const useCaseLines = doc.splitTextToSize(primaryUseCaseText, 170);
+            doc.text(useCaseLines, 20, yPos);
+            yPos += useCaseLines.length * 5 + 5;
+            
+            doc.text('GxP Relevance:', 20, yPos);
+            doc.text(gxpText.substring(0, 50), 70, yPos);
+            yPos += 8;
+            
+            doc.text('SOX Relevance:', 20, yPos);
+            doc.text(soxText, 70, yPos);
+            yPos += 8;
+            
+            doc.text('Use Case Description:', 20, yPos);
+            yPos += 6;
+            const descLines = doc.splitTextToSize(useCase, 170);
+            doc.text(descLines, 20, yPos);
+            yPos += descLines.length * 5 + 15;
+            
+            // Add new page if needed
+            if (yPos > 220) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            doc.setFontSize(14);
+            doc.setTextColor(44, 62, 80);
+            doc.text('RISK ASSESSMENT FRAMEWORK', 20, yPos);
+            doc.line(20, yPos + 2, 190, yPos + 2);
+            
+            yPos += 15;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text('RAISE 1.0 uses a binary classification system:', 20, yPos);
+            yPos += 7;
+            doc.text('HIGH RISK: Use cases in regulated domains OR external use OR fully autonomous', 25, yPos);
+            yPos += 5;
+            doc.text('STANDARD RISK: All other AI solutions with standard controls', 25, yPos);
+            yPos += 15;
+            
+            doc.setFontSize(14);
+            doc.setTextColor(44, 62, 80);
+            doc.text('KEY REQUIREMENTS', 20, yPos);
+            doc.line(20, yPos + 2, 190, yPos + 2);
+            
+            yPos += 15;
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            
+            let requirements = [
+                'AI Model Training, Evaluation & Lifecycle Management',
+                'Continuous Performance Monitoring',
+            ];
+            
+            if (currentRisk === 'HIGH') {
+                requirements.push(
+                    'RRB (Responsible AI Review Board) Approval Required',
+                    'Independent Pre and Post-Deployment Assessments',
+                    'Comprehensive Bias Testing and Fairness Assessments',
+                    'Enhanced Monitoring with Automated Alerts'
+                );
+            }
+            
+            const gxpValue = document.getElementById('gxpRelevant').value;
+            if (gxpValue === 'yes_high' || gxpValue === 'yes_standard') {
+                requirements.push('GxP Validation & Compliance Controls');
+                requirements.push('Periodic GxP Review and Documentation');
+            }
+            
+            const soxValue = document.getElementById('soxRelevant').value;
+            if (soxValue === 'yes') {
+                requirements.push('SOX Financial Controls & Audit Trail');
+                requirements.push('Annual SOX Compliance Assessment');
+            }
+            
+            requirements.forEach(req => {
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                const lines = doc.splitTextToSize(`• ${req}`, 170);
+                doc.text(lines, 25, yPos);
+                yPos += lines.length * 5 + 2;
+            });
+            
+            const pageHeight = doc.internal.pageSize.height;
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text('RAISE 1.0 Framework - Risk Profile Aligned', 20, pageHeight - 15);
+            doc.text('© 2025 Sanofi - All rights reserved', 20, pageHeight - 8);
+            
+            const fileName = `RAISE_1_0_Risk_Assessment_${projectName.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+            doc.save(fileName);
+        }
+    </script>
+</body>
+</html>
